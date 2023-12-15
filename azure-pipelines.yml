@@ -28,3 +28,14 @@ stages:
           KeyVaultName: 'nextopsakv01'
           SecretsFilter: '*'
           RunAsPreJob: true
+      
+      - task: TerraformTaskV2@2
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: '$(build.sourcesdirectory)/env'
+          backendServiceArm: 'YAML_ProjectSC'
+          backendAzureRmResourceGroupName: 'NextOps'
+          backendAzureRmStorageAccountName: 'nextopstfsa01'
+          backendAzureRmContainerName: 'terraform'
+          backendAzureRmKey: 'DEV/dev.tfstate'
