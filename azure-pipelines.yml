@@ -22,32 +22,9 @@ stages:
       pool:
         vmImage: $(vmImageName)
       steps:
-      - task: Maven@3
+      - task: AzureKeyVault@2
         inputs:
-          mavenPomFile: 'pom.xml'
-          publishJUnitResults: true
-          testResultsFiles: '**/surefire-reports/TEST-*.xml'
-          javaHomeOption: 'JDKVersion'
-          mavenVersionOption: 'Default'
-          mavenAuthenticateFeed: false
-          effectivePomSkip: false
-          sonarQubeRunAnalysis: false
-      - task: CopyFiles@2
-        inputs:
-          SourceFolder: '$(build.sourcesdirectory)/src/main/resources/db/mysql'
-          Contents: '*.sql'
-          TargetFolder: '$(build.artifactsstagingdirectory)'
-        
-      - task: CopyFiles@2
-        inputs:
-          SourceFolder: '$(system.defaultworkingdirectory)'
-          Contents: '**/target/*.?(war|jar)'
-          TargetFolder: '$(build.artifactstagingdirectory)'
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-          ArtifactName: 'drop'
-          publishLocation: 'Container'    
-
-
-
+          azureSubscription: 'YAML_ProjectSC'
+          KeyVaultName: 'nextopsakv01'
+          SecretsFilter: '*'
+          RunAsPreJob: true
