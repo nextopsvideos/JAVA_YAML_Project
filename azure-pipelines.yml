@@ -39,3 +39,89 @@ stages:
           backendAzureRmStorageAccountName: 'nextopstfsa01'
           backendAzureRmContainerName: 'terraform'
           backendAzureRmKey: 'DEV/dev.tfstate'
+      
+      - task: TerraformTaskV2@2
+        inputs:
+          provider: 'azurerm'
+          command: 'apply'
+          workingDirectory: '$(build.sourcesdirectory)/env'
+          commandOptions: '--auto-approve'
+          environmentServiceNameAzureRM: 'YAML_ProjectSC'
+        
+      - task: MysqlDeploymentOnMachineGroup@1
+        inputs:
+          TaskNameSelector: 'SqlTaskFile'
+          SqlFile: '$(build.sourcesdirectory)/src/main/resources/db/mysql/schema.sql'
+          ServerName: 'nextopsmysql-dev01.mysql.database.azure.com'
+          DatabaseName: 'petclinic'
+          SqlUsername: 'petclinic@nextopsmysql-dev01'
+          SqlPassword: '$(DBDevPass)'
+      
+      - task: MysqlDeploymentOnMachineGroup@1
+        inputs:
+          TaskNameSelector: 'SqlTaskFile'
+          SqlFile: '$(build.sourcesdirectory)/src/main/resources/db/mysql/data.sql'
+          ServerName: 'nextopsmysql-dev01.mysql.database.azure.com'
+          DatabaseName: 'petclinic'
+          SqlUsername: 'petclinic@nextopsmysql-dev01'
+          SqlPassword: '$(DBDevPass)'
+      
+      - task: Maven@3
+        inputs:
+          mavenPomFile: 'pom.xml'
+          options: '-Ddb.script=mysql -Djpa.database=MYSQL -Djdbc.driverClassName=com.mysql.cj.jdbc.Driver -Djdbc.url=jdbc:mysql://nextopsmysql-dev01.mysql.database.azure.com:3306/petclinic?useUnicode=true -Djdbc.username=petclinic@nextopsmysql-dev01 -Djdbc.password=$(DBDevPass)'
+          publishJUnitResults: true
+          testResultsFiles: '**/surefire-reports/TEST-*.xml'
+          javaHomeOption: 'JDKVersion'
+          mavenVersionOption: 'Default'
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+          sonarQubeRunAnalysis: false
+      
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(System.DefaultWorkingDirectory)'
+          Contents: '**/target/*.?(war|jar)'
+          TargetFolder: '$(build.artifactstagingdirectory)/dev'
+      
+      - task: MysqlDeploymentOnMachineGroup@1
+        inputs:
+          TaskNameSelector: 'SqlTaskFile'
+          SqlFile: '$(build.sourcesdirectory)/src/main/resources/db/mysql/schema.sql'
+          ServerName: 'nextopsmysql-stage01.mysql.database.azure.com'
+          DatabaseName: 'petclinic'
+          SqlUsername: 'petclinic@nextopsmysql-stage01'
+          SqlPassword: '$(DBStagePass)'
+      
+      - task: MysqlDeploymentOnMachineGroup@1
+        inputs:
+          TaskNameSelector: 'SqlTaskFile'
+          SqlFile: '$(build.sourcesdirectory)/src/main/resources/db/mysql/data.sql'
+          ServerName: 'nextopsmysql-stage01.mysql.database.azure.com'
+          DatabaseName: 'petclinic'
+          SqlUsername: 'petclinic@nextopsmysql-stage01'
+          SqlPassword: '$(DBStagePass)'
+      
+      - task: Maven@3
+        inputs:
+          mavenPomFile: 'pom.xml'
+          options: '-Ddb.script=mysql -Djpa.database=MYSQL -Djdbc.driverClassName=com.mysql.cj.jdbc.Driver -Djdbc.url=jdbc:mysql://nextopsmysql-stage01.mysql.database.azure.com:3306/petclinic?useUnicode=true -Djdbc.username=petclinic@nextopsmysql-stage01 -Djdbc.password=$(DBStagePass)'
+          publishJUnitResults: true
+          testResultsFiles: '**/surefire-reports/TEST-*.xml'
+          javaHomeOption: 'JDKVersion'
+          mavenVersionOption: 'Default'
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+          sonarQubeRunAnalysis: false
+      
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(System.DefaultWorkingDirectory)'
+          Contents: '**/target/*.?(war|jar)'
+          TargetFolder: '$(build.artifactstagingdirectory)/stage'
+      
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'drop'
+          publishLocation: 'Container'
