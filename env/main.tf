@@ -61,7 +61,7 @@ resource "azurerm_mysql_server" "example" {
   version             = "5.7"
   ssl_enforcement_enabled = true
   administrator_login          = "petclinic"
-  administrator_login_password = "Admin@12345678"
+  administrator_login_password = "testpass"
 }
 
 # MySQL Firewall Rule
