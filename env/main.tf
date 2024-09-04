@@ -89,7 +89,7 @@ resource "azurerm_mysql_flexible_server_firewall_rule" "example" {
   for_each = toset(var.environments)
   name                = "nextopsmysqlrule-${each.key}"
   resource_group_name = azurerm_resource_group.example[each.key].name
-  server_name         = azurerm_mysql_server.example[each.key].name
+  server_name         = azurerm_mysql_flexible_server.example[each.key].name
   start_ip_address    = "0.0.0.0"
   end_ip_address      = "0.0.0.0"
 }
@@ -110,7 +110,7 @@ resource "azurerm_mysql_flexible_database" "example" {
 
   name                = "petclinic"
   resource_group_name = azurerm_resource_group.example[each.key].name
-  server_name         = azurerm_mysql_server.example[each.key].name
+  server_name         = azurerm_mysql_flexible_server.example[each.key].name
   charset             = "utf8"
   collation           = "utf8_unicode_ci"
 }
