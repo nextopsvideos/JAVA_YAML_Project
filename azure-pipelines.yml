@@ -38,7 +38,7 @@ stages:
             command: 'apply'
             workingDirectory: '$(System.DefaultWorkingDirectory)/env'
             commandOptions: '--auto-approve'
-            environmentServiceNameAzureRM: 'Pay-As-You-Go (a355c32e-4a22-4b05-aab4-be236850fa6e)'
+            environmentServiceNameAzureRM: 'Pay-As-You-Go (a355c32e-4a22-4b05-aab4-be236850fa6e)'       
         - task: AzureMysqlDeployment@1
           inputs:
             azureSubscription: 'Pay-As-You-Go (a355c32e-4a22-4b05-aab4-be236850fa6e)'
@@ -51,4 +51,4 @@ stages:
             IpDetectionMethod: 'IPAddressRange'
             StartIpAddress: '0.0.0.0'
             EndIpAddress: '0.0.0.0'
-         
+           
