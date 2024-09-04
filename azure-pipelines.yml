@@ -22,4 +22,21 @@ stages:
             KeyVaultName: 'nextopsakv01'
             SecretsFilter: '*'
             RunAsPreJob: true
+        - task: TerraformTaskV2@2
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/env'
+            backendServiceArm: 'Pay-As-You-Go (a355c32e-4a22-4b05-aab4-be236850fa6e)'
+            backendAzureRmResourceGroupName: 'NextOps'
+            backendAzureRmStorageAccountName: 'nextopssat19'
+            backendAzureRmContainerName: 'terraform'
+            backendAzureRmKey: 'DEV/dev.tfstate'
+        - task: TerraformTaskV2@2
+          inputs:
+            provider: 'azurerm'
+            command: 'apply'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/env'
+            commandOptions: '--auto-approve'
+            environmentServiceNameAzureRM: 'Pay-As-You-Go (a355c32e-4a22-4b05-aab4-be236850fa6e)'
          
