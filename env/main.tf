@@ -29,7 +29,7 @@ resource "azurerm_service_plan" "example" {
   resource_group_name = azurerm_resource_group.example[each.key].name
   location            = azurerm_resource_group.example[each.key].location
   os_type             = "Linux"
-  sku_name            = "P0V3"
+  sku_name            = "P0v3"
 }
 
 # Linux Web App
