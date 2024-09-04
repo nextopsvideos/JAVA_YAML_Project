@@ -29,7 +29,7 @@ resource "azurerm_service_plan" "example" {
   resource_group_name = azurerm_resource_group.example[each.key].name
   location            = azurerm_resource_group.example[each.key].location
   os_type             = "Linux"
-  sku_name            = "P0v3"
+  sku_name            = "B1"
 }
 
 # Linux Web App
@@ -51,23 +51,42 @@ resource "azurerm_linux_web_app" "example" {
 }
 
 # MySQL Server
-resource "azurerm_mysql_server" "example" {
-  for_each = toset(var.environments)
+# resource "azurerm_mysql_server" "example" {
+#   for_each = toset(var.environments)
 
-  name                = "nextopsmysql-${each.key}01"
-  resource_group_name = azurerm_resource_group.example[each.key].name
-  location            = azurerm_resource_group.example[each.key].location
-  sku_name            = "GP_Gen5_2"
-  version             = "5.7"
-  ssl_enforcement_enabled = true
-  administrator_login          = "petclinic"
-  administrator_login_password = "P2ssw0rd@123"
+#   name                = "nextopsmysql-${each.key}01"
+#   resource_group_name = azurerm_resource_group.example[each.key].name
+#   location            = azurerm_resource_group.example[each.key].location
+#   sku_name            = "GP_Gen5_2"
+#   version             = "8.0"
+#   ssl_enforcement_enabled = true
+#   administrator_login          = "petclinic"
+#   administrator_login_password = "P2ssw0rd@123"
+# }
+
+resource "azurerm_mysql_flexible_server" "example" {
+  for_each = toset(var.environments)
+  name                   = "nextopsmysql-${each.key}01"
+  resource_group_name    = azurerm_resource_group.example[each.key].name
+  location               = azurerm_resource_group.example[each.key].location
+  administrator_login    = "petclinic"
+  administrator_password = "P2ssw0rd@123"
+  sku_name               = "B_Standard_B1ms"
 }
 
-# MySQL Firewall Rule
-resource "azurerm_mysql_firewall_rule" "example" {
-  for_each = toset(var.environments)
+# # MySQL Firewall Rule
+# resource "azurerm_mysql_firewall_rule" "example" {
+#   for_each = toset(var.environments)
 
+#   name                = "nextopsmysqlrule-${each.key}"
+#   resource_group_name = azurerm_resource_group.example[each.key].name
+#   server_name         = azurerm_mysql_server.example[each.key].name
+#   start_ip_address    = "0.0.0.0"
+#   end_ip_address      = "0.0.0.0"
+# }
+
+resource "azurerm_mysql_flexible_server_firewall_rule" "example" {
+  for_each = toset(var.environments)
   name                = "nextopsmysqlrule-${each.key}"
   resource_group_name = azurerm_resource_group.example[each.key].name
   server_name         = azurerm_mysql_server.example[each.key].name
@@ -76,12 +95,22 @@ resource "azurerm_mysql_firewall_rule" "example" {
 }
 
 # MySQL Database
-resource "azurerm_mysql_database" "example" {
+# resource "azurerm_mysql_database" "example" {
+#   for_each = toset(var.environments)
+
+#   name                = "petclinic"
+#   resource_group_name = azurerm_resource_group.example[each.key].name
+#   server_name         = azurerm_mysql_server.example[each.key].name
+#   charset             = "utf8mb4"
+#   collation           = "utf8mb4_unicode_ci"
+# }
+
+resource "azurerm_mysql_flexible_database" "example" {
   for_each = toset(var.environments)
 
   name                = "petclinic"
   resource_group_name = azurerm_resource_group.example[each.key].name
   server_name         = azurerm_mysql_server.example[each.key].name
-  charset             = "utf8mb4"
-  collation           = "utf8mb4_unicode_ci"
+  charset             = "utf8"
+  collation           = "utf8_unicode_ci"
 }

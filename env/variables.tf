@@ -7,5 +7,5 @@ variable "environments" {
 
 variable "location" {
   description = "The location for all resources"
-  default     = "East US"
+  default     = "West US"
 }
