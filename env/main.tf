@@ -29,7 +29,7 @@ resource "azurerm_service_plan" "example" {
   resource_group_name = azurerm_resource_group.example[each.key].name
   location            = azurerm_resource_group.example[each.key].location
   os_type             = "Linux"
-  sku_name            = "S1"
+  sku_name            = "P0V3"
 }
 
 # Linux Web App
@@ -61,7 +61,7 @@ resource "azurerm_mysql_server" "example" {
   version             = "5.7"
   ssl_enforcement_enabled = true
   administrator_login          = "petclinic"
-  administrator_login_password = "testpass"
+  administrator_login_password = "P2ssw0rd@123"
 }
 
 # MySQL Firewall Rule
