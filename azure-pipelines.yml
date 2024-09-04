@@ -41,5 +41,5 @@ stages:
             environmentServiceNameAzureRM: 'Pay-As-You-Go (a355c32e-4a22-4b05-aab4-be236850fa6e)'       
         - task: CmdLine@2
           inputs:
-            script: 'mysql -h nextopsmysql-dev01.mysql.database.azure.com -u petclinic@nextopsmysql-dev01 -pP2ssw0rd@123 -p petclinic < "$(build.sourcesdirectory)/src/main/resources/db/mysql/data.sql"'
+            script: 'mysql -h nextopsmysql-dev01.mysql.database.azure.com -u petclinic -pP2ssw0rd@123 -p petclinic < "$(build.sourcesdirectory)/src/main/resources/db/mysql/data.sql"'
            
