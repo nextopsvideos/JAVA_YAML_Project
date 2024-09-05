@@ -62,3 +62,6 @@ stages:
             SourceFolder: '$(System.DefaultWorkingDirectory)'
             Contents: '**/target/*.?(war|jar)'
             TargetFolder: '$(Build.ArtifactStagingDirectory)/dev'
+        
+        - upload: $(Build.ArtifactStagingDirectory)
+          artifact: drop
