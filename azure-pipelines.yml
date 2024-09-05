@@ -117,7 +117,7 @@ stages:
   
   - stage: DeployStage
     displayName: Deploy to Stage Environment
-    dependsOn: Build
+    dependsOn: Deploy
     condition: succeeded()
     jobs:
       - deployment: DeploytoLinuxStageWebApp
