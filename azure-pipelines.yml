@@ -74,3 +74,20 @@ stages:
       - deployment: DeploytoLinuxDevWebApp
         displayName: Deploy to Linux Dev Web App
         environment: "DevWebApp"
+        strategy:
+         runOnce:
+           deploy:
+            steps:
+            - task: AzureKeyVault@2
+              inputs:
+                azureSubscription: 'Pay-As-You-Go (a355c32e-4a22-4b05-aab4-be236850fa6e)'
+                KeyVaultName: 'nextopsakv01'
+                SecretsFilter: '*'
+                RunAsPreJob: true
+            - task: AzureWebApp@1
+              inputs:
+                azureSubscription: 'Pay-As-You-Go (a355c32e-4a22-4b05-aab4-be236850fa6e)'
+                appType: 'webAppLinux'
+                appName: 'nextopsapp-dev-01'
+                package: '$(Pipeline.Workspace)/drop/dev/target/*.?(war|jar)'
+             
