@@ -65,3 +65,12 @@ stages:
         
         - upload: $(Build.ArtifactStagingDirectory)
           artifact: drop
+
+  - stage: Deploy
+    displayName: Deploy to Dev Environment
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - deployment: DeploytoLinuxDevWebApp
+        displayName: Deploy to Linux Dev Web App
+        environment: "DevWebApp"
