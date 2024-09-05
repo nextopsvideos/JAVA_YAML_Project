@@ -42,4 +42,7 @@ stages:
         - task: CmdLine@2
           inputs:
             script: 'mysql -h nextopsmysql-dev01.mysql.database.azure.com -u petclinic -p petclinic -p$(DBDevPass) < "$(build.sourcesdirectory)/src/main/resources/db/mysql/schema.sql"'
-           
+
+        - task: CmdLine@2
+          inputs:
+            script: 'mysql -h nextopsmysql-dev01.mysql.database.azure.com -u petclinic -p petclinic -p$(DBDevPass) < "$(build.sourcesdirectory)/src/main/resources/db/mysql/data.sql"'   
