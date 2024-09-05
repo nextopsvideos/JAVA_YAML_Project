@@ -50,7 +50,7 @@ stages:
         - task: Maven@4
           inputs:
             mavenPomFile: 'pom.xml'
-            options: '-Ddb.script=mysql -Djpa.database=MYSQL -Djdbc.driverClassName=com.mysql.cj.jdbc.Driver -Djdbc.url=jdbc:mysql://nextopsmysql-dev01.mysql.database.azure.com:3306/petclinic?useUnicode=true -Djdbc.username=petclinic@nextopsmysql-dev01 -Djdbc.password=$(DBDevPass)'
+            options: '-Ddb.script=mysql -Djpa.database=MYSQL -Djdbc.driverClassName=com.mysql.cj.jdbc.Driver -Djdbc.url=jdbc:mysql://nextopsmysql-dev01.mysql.database.azure.com:3306/petclinic?useUnicode=true -Djdbc.username=petclinic -Djdbc.password=$(DBDevPass)'
             publishJUnitResults: false
             javaHomeOption: 'JDKVersion'
             mavenVersionOption: 'Default'
