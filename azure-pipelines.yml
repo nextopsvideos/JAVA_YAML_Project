@@ -46,3 +46,20 @@ stages:
         - task: CmdLine@2
           inputs:
             script: 'mysql -h nextopsmysql-dev01.mysql.database.azure.com -u petclinic -p petclinic -p$(DBDevPass) < "$(build.sourcesdirectory)/src/main/resources/db/mysql/data.sql"'   
+        
+        - task: Maven@4
+          inputs:
+            mavenPomFile: 'pom.xml'
+            options: '-Ddb.script=mysql -Djpa.database=MYSQL -Djdbc.driverClassName=com.mysql.cj.jdbc.Driver -Djdbc.url=jdbc:mysql://nextopsmysql-dev01.mysql.database.azure.com:3306/petclinic?useUnicode=true -Djdbc.username=petclinic@nextopsmysql-dev01 -Djdbc.password=$(DBDevPass)'
+            publishJUnitResults: true
+            testResultsFiles: '**/surefire-reports/TEST-*.xml'
+            javaHomeOption: 'JDKVersion'
+            mavenVersionOption: 'Default'
+            mavenAuthenticateFeed: false
+            effectivePomSkip: false
+            sonarQubeRunAnalysis: false        
+        - task: CopyFiles@2
+          inputs:
+            SourceFolder: '$(System.DefaultWorkingDirectory)'
+            Contents: '**/target/*.?(war|jar)'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/dev'
