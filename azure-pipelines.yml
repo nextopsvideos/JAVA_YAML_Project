@@ -63,6 +63,30 @@ stages:
             Contents: '**/target/*.?(war|jar)'
             TargetFolder: '$(Build.ArtifactStagingDirectory)/dev'
         
+        - task: CmdLine@2
+          inputs:
+            script: 'mysql -h nextopsmysql-staging01.mysql.database.azure.com -u petclinic -p petclinic -p$(DBStagingPass) < "$(build.sourcesdirectory)/src/main/resources/db/mysql/schema.sql"'
+
+        - task: CmdLine@2
+          inputs:
+            script: 'mysql -h nextopsmysql-staging01.mysql.database.azure.com -u petclinic -p petclinic -p$(DBStagingPass) < "$(build.sourcesdirectory)/src/main/resources/db/mysql/data.sql"'   
+        
+        - task: Maven@4
+          inputs:
+            mavenPomFile: 'pom.xml'
+            options: '-Ddb.script=mysql -Djpa.database=MYSQL -Djdbc.driverClassName=com.mysql.cj.jdbc.Driver -Djdbc.url=jdbc:mysql://nextopsmysql-staging01.mysql.database.azure.com:3306/petclinic?useUnicode=true -Djdbc.username=petclinic -Djdbc.password=$(DBStagingPass)'
+            publishJUnitResults: false
+            javaHomeOption: 'JDKVersion'
+            mavenVersionOption: 'Default'
+            mavenAuthenticateFeed: false
+            effectivePomSkip: false
+            sonarQubeRunAnalysis: false
+        - task: CopyFiles@2
+          inputs:
+            SourceFolder: '$(System.DefaultWorkingDirectory)'
+            Contents: '**/target/*.?(war|jar)'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/staging'
+        
         - upload: $(Build.ArtifactStagingDirectory)
           artifact: drop
 
@@ -90,4 +114,29 @@ stages:
                 appType: 'webAppLinux'
                 appName: 'nextopsapp-dev-01'
                 package: '$(Pipeline.Workspace)/drop/dev/target/*.?(war|jar)'
+  
+  - stage: DeployStage
+    displayName: Deploy to Stage Environment
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - deployment: DeploytoLinuxStageWebApp
+        displayName: Deploy to Linux Stage Web App
+        environment: "StageWebApp"
+        strategy:
+         runOnce:
+           deploy:
+            steps:
+            - task: AzureKeyVault@2
+              inputs:
+                azureSubscription: 'Pay-As-You-Go (a355c32e-4a22-4b05-aab4-be236850fa6e)'
+                KeyVaultName: 'nextopsakv01'
+                SecretsFilter: '*'
+                RunAsPreJob: true
+            - task: AzureWebApp@1
+              inputs:
+                azureSubscription: 'Pay-As-You-Go (a355c32e-4a22-4b05-aab4-be236850fa6e)'
+                appType: 'webAppLinux'
+                appName: 'nextopsapp-stage-01'
+                package: '$(Pipeline.Workspace)/drop/stage/target/*.?(war|jar)'
              
